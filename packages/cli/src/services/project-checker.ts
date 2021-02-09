@@ -1,6 +1,7 @@
 import * as fs from 'fs-extra'
 import * as path from 'path'
-import { Logger } from '@boostercloud/framework-types'
+//import { Logger } from '@boostercloud/framework-types'
+import { logger } from '../services/logger'
 
 function checkIndexFileIsBooster(indexFilePath: string): void {
   const contents = fs.readFileSync(indexFilePath)
@@ -30,14 +31,14 @@ export async function checkItIsABoosterProject(projectPath: string): Promise<voi
   }
 }
 
-export async function checkCurrentDirBoosterVersion(logger: Logger, userAgent: string): Promise<void> {
-  return checkBoosterVersion(logger, userAgent, process.cwd())
+export async function checkCurrentDirBoosterVersion(userAgent: string): Promise<void> {
+  return checkBoosterVersion(userAgent, process.cwd())
 }
 
-export async function checkBoosterVersion(logger: Logger, userAgent: string, projectPath: string): Promise<void> {
+export async function checkBoosterVersion(userAgent: string, projectPath: string): Promise<void> {
   const projectVersion = await getBoosterVersion(projectPath)
   const cliVersion = userAgent.split(' ')[0].split('/')[2]
-  await compareVersionsAndDisplayMessages(logger, cliVersion, projectVersion)
+  await compareVersionsAndDisplayMessages(cliVersion, projectVersion)
 }
 
 async function getBoosterVersion(projectPath: string): Promise<string> {
@@ -53,7 +54,7 @@ async function getBoosterVersion(projectPath: string): Promise<string> {
   }
 }
 
-async function compareVersionsAndDisplayMessages(logger: Logger, cliVersion: string, projectVersion: string): Promise<void> {
+async function compareVersionsAndDisplayMessages(cliVersion: string, projectVersion: string): Promise<void> {
   if (cliVersion === projectVersion)  { return }
   const cliVersionParts = cliVersion.split('.').map((v) => parseInt(v,10))
   const projectVersionParts = projectVersion.split('.').map((v) => parseInt(v,10))
